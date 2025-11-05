@@ -1,0 +1,53 @@
+{
+  "name": "api-client-everything-ai",
+  "version": "1.0.0",
+  "description": "Secure Node.js + Express API service for AI-powered resume and job description analysis",
+  "type": "module",
+  "main": "dist/app.js",
+  "scripts": {
+    "dev": "nodemon",
+    "dev:tsx": "tsx watch --clear-screen=false src/app.ts",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "node dist/app.js",
+    "start:dev": "tsx src/app.ts",
+    "start:nodemon": "nodemon dist/app.js",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write ./src",
+    "format-watch": "(git diff --name-only --diff-filter=ACM && git ls-files --others --exclude-standard) | grep -E '\\.(ts|tsx|js)$' | xargs prettier --write",
+    "lint": "eslint --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean"
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "openai",
+    "resume",
+    "job-description"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^6.0.0",
+    "axios": "^1.6.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "prettier": "^3.6.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.5",
+    "nodemon": "^3.0.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-flowtype": "^8.0.3",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-testing-library": "^5.3.1",
+    "eslint-plugin-unused-imports": "^4.1.4"
+  }
+}
