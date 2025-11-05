@@ -95,8 +95,9 @@ app.use((_req: Request, res: Response) => {
 // Global error handler (must be last)
 app.use(errorHandler);
 
-// Start server (skip if in test environment)
-if (process.env.NODE_ENV !== "test") {
+// Start server (skip if in test environment or Vercel serverless)
+// Vercel runs this as a serverless function, so we don't call app.listen()
+if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.info(`🚀 Server running on port ${PORT}`);
     console.info(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
