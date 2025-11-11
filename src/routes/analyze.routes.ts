@@ -18,6 +18,7 @@ router.post(
   validateRequest([
     {field: "jd", required: true, minLength: 10, maxLength: 50000},
     {field: "resume", required: true, minLength: 10, maxLength: 50000},
+    {field: "jobMetadata", required: false, minLength: 10, maxLength: 50000},
   ]),
   asyncHandler(analyzeHandler)
 );

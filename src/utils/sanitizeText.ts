@@ -24,8 +24,8 @@ export function sanitizeText(text: string): string {
     "[phone]"
   );
 
-  // URLs (might contain personal domains)
-  sanitized = sanitized.replace(/https?:\/\/[^\s]+/g, "[url]");
+  // // URLs (might contain personal domains)
+  // sanitized = sanitized.replace(/https?:\/\/[^\s]+/g, "[url]");
 
   // Credit card patterns (just in case)
   sanitized = sanitized.replace(

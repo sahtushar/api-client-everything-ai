@@ -5,6 +5,8 @@ import axios, {AxiosError} from "axios";
 
 import type {
   AnalyzeResponse,
+  JobMetaDataResponse,
+  ParsedJobMetadata,
   StructuredJD,
   StructuredResume,
   TailoredResume,
@@ -341,6 +343,111 @@ ${sanitizedResume}
 }
 
 /**
+ * Parse job metadata from HTML string
+ */
+export async function parseJobMetadata(
+  metadataHtmlString: string
+): Promise<JobMetaDataResponse> {
+  const sanitizedHtml = sanitizeText(metadataHtmlString.substring(0, 6000));
+
+  const extractionPrompt = `
+You are an expert HTML parser that extracts job posting metadata from LinkedIn-like HTML pages.
+
+Your goal is to analyze the given HTML string and extract structured job metadata in the following JSON format:
+
+{
+  "company": {
+    "name": "",
+    "logo": "",
+    "linkedinUrl": ""
+  },
+  "job": {
+    "title": "",
+    "location": "",
+    "employmentType": "",
+    "applyUrl": "",
+    "posted": "",
+    "applicants": "",
+    "promotedBy": "",
+    "responsesManaged": ""
+  }
+}
+
+Instructions:
+- Parse the HTML carefully and extract only what is visible or explicitly stated in the HTML.
+- If any field is missing or not clearly available, return an empty string for that field.
+- Do not infer or guess values.
+- Ensure the output is valid JSON — no extra text, markdown, or explanations.
+- Keep URLs exactly as they appear in the HTML, even if they are relative.
+- For "company.logo", return the image URL from the <img> tag with alt containing "logo".
+- For "company.name" and "company.linkedinUrl", extract from the company name <a> tag.
+- For "job.title", extract the full text of the <h1> job title link.
+- For "job.location", extract the text showing the location (city, state, country).
+- For "employmentType", use the text after the check icon (e.g., “Full-time”).
+- For "applyUrl", extract the href from the job title link (<h1><a>...</a></h1>).
+- For "posted", extract the text containing “Reposted” or similar phrases.
+- For "applicants", extract the phrase like “Over 100 people clicked apply”.
+- For "promotedBy" and "responsesManaged", extract the text following those labels if present.
+
+Return only the JSON object.
+
+HTML:
+
+${sanitizedHtml}
+`;
+
+  try {
+    const response = await callOpenAIChat(
+      [
+        {
+          role: "system",
+          content:
+            "You are an HTML parser that extracts structured job metadata from HTML content.",
+        },
+        {role: "user", content: extractionPrompt},
+      ],
+      "gpt-4o-mini",
+      0.2,
+      1000
+    );
+
+    const parsed: ParsedJobMetadata = JSON.parse(response.trim());
+
+    return {
+      companyLinkedInUrl: parsed.company.linkedinUrl || "",
+      companyLogoUrl: parsed.company.logo || "",
+      companyName: parsed.company.name || "",
+      jobTitle: parsed.job.title || "",
+      location: parsed.job.location || "",
+      salary: "",
+      postedDate: parsed.job.posted || "",
+      applicationDeadline: "",
+      jobType: parsed.job.employmentType || "",
+      remote: "",
+      benefits: [],
+      additionalInfo: {},
+    };
+  } catch (error) {
+    console.error("Error parsing job metadata:", error);
+    // Return empty metadata on error
+    return {
+      companyLinkedInUrl: "",
+      companyLogoUrl: "",
+      companyName: "",
+      jobTitle: "",
+      location: "",
+      salary: "",
+      postedDate: "",
+      applicationDeadline: "",
+      jobType: "",
+      remote: "",
+      benefits: [],
+      additionalInfo: {},
+    };
+  }
+}
+
+/**
  * Base analysis result (without structuredJD and tailoredResume)
  */
 interface BaseAnalysisResult {
@@ -442,7 +549,8 @@ ${structuredResumeJson}
  */
 export async function analyze(
   jd: string,
-  resume: string
+  resume: string,
+  metadataHtmlString?: string
 ): Promise<AnalyzeResponse> {
   try {
     // Preprocess resume
@@ -450,6 +558,18 @@ export async function analyze(
 
     // Preprocess JD
     const structuredJD = await preProcessJD(jd);
+
+    // Parse job metadata if provided
+    let parsedMetadata: JobMetaDataResponse | undefined;
+    if (metadataHtmlString && metadataHtmlString.trim().length > 0) {
+      try {
+        parsedMetadata = await parseJobMetadata(metadataHtmlString);
+        console.info("Successfully parsed job metadata");
+      } catch (error) {
+        console.warn("Failed to parse job metadata:", error);
+        // Continue without metadata if parsing fails
+      }
+    }
 
     // Inject structured resume JSON into the analysis prompt
     const structuredResumeJson = JSON.stringify(structuredResume);
@@ -472,6 +592,7 @@ export async function analyze(
         tailoredProjects: [],
         coverLetterHighlights: [],
       },
+      jobMetadata: parsedMetadata,
     };
 
     // Generate tailored resume content

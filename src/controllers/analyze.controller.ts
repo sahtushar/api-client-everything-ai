@@ -15,7 +15,7 @@ export async function analyzeHandler(
   req: Request<{}, AnalyzeResponse, AnalyzeRequest>,
   res: Response<AnalyzeResponse>
 ): Promise<void> {
-  const {jd, resume} = req.body;
+  const {jd, resume, jobMetadata} = req.body;
 
   if (!jd || typeof jd !== "string") {
     res.status(400).json({
@@ -36,16 +36,25 @@ export async function analyzeHandler(
   const sanitizedJD = sanitizeText(jd);
   const sanitizedResume = sanitizeText(resume);
 
+  // Extract metadataHtmlString from jobMetadata if provided
+  const metadataHtmlString = jobMetadata?.metadataHtmlString;
+
   console.info("Analyzing job description and resume...", {
     jdLength: sanitizedJD.length,
     resumeLength: sanitizedResume.length,
+    hasJobMetadata: !!metadataHtmlString,
   });
 
   try {
-    const analysisResult = await analyze(sanitizedJD, sanitizedResume);
+    const analysisResult = await analyze(
+      sanitizedJD,
+      sanitizedResume,
+      metadataHtmlString
+    );
 
     console.info("Successfully analyzed job description and resume", {
       matchScore: analysisResult.matchScore,
+      hasJobMetadata: !!analysisResult.jobMetadata,
     });
 
     res.json(analysisResult);

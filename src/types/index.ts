@@ -69,6 +69,53 @@ export interface TailoredResume {
   coverLetterHighlights: string[];
 }
 
+export interface JobMetadata {
+  metadataHtmlString: string;
+  companyName?: string;
+  jobTitle?: string;
+  location?: string;
+  salary?: string;
+  postedDate?: string;
+  applicationDeadline?: string;
+  jobType?: string;
+  remote?: string;
+  benefits?: string[];
+  additionalInfo?: Record<string, string>;
+}
+
+export interface ParsedJobMetadata {
+  company: {
+    name: string;
+    logo: string;
+    linkedinUrl: string;
+  };
+  job: {
+    title: string;
+    location: string;
+    employmentType: string;
+    applyUrl: string;
+    posted: string;
+    applicants: string;
+    promotedBy: string;
+    responsesManaged: string;
+  };
+}
+
+export interface JobMetaDataResponse {
+  companyLinkedInUrl: string;
+  companyLogoUrl: string;
+  companyName: string;
+  jobTitle: string;
+  location: string;
+  salary: string;
+  postedDate: string;
+  applicationDeadline: string;
+  jobType: string;
+  remote: string;
+  benefits: string[];
+  additionalInfo: Record<string, string>;
+}
+
 export interface AnalysisResult {
   matchScore: number; // overall job fit score (0-100)
   matchedSkills: string[]; // exact and semantically similar skills found in both JD and resume
@@ -78,6 +125,7 @@ export interface AnalysisResult {
   summary: string; // 2-3 sentence overview of candidate fit, strengths, and improvement areas
   structuredJD: StructuredJD;
   tailoredResume: TailoredResume;
+  jobMetadata?: JobMetaDataResponse;
 }
 
 export interface AnalyzeResponse extends AnalysisResult {}
@@ -101,6 +149,7 @@ export interface PreprocessResumeResponse {
 export interface AnalyzeRequest {
   jd: string;
   resume: string;
+  jobMetadata?: JobMetadata;
 }
 
 export interface ApiError {
