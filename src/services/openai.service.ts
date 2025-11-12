@@ -632,7 +632,7 @@ Guidelines:
 1. Create a **tailored professional summary** (2-3 sentences) that emphasizes the candidate's most relevant experience, skills, and achievements for this specific role.
 2. Prioritize and reorder **skills** to match the job's must-have and nice-to-have skills list, placing the most relevant at the top.
 3. For each relevant **experience entry**, suggest 2-3 tailored bullet points that:
-   - Use keywords from the job description
+   - Use skills from the job description in each bullet point
    - Highlight achievements that align with the job requirements
    - Quantify results where possible
    - Show progression and impact
