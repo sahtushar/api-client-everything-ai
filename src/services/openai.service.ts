@@ -549,13 +549,10 @@ ${structuredResumeJson}
  */
 export async function analyze(
   jd: string,
-  resume: string,
+  structuredResume: StructuredResume,
   metadataHtmlString?: string
 ): Promise<AnalyzeResponse> {
   try {
-    // Preprocess resume
-    const structuredResume = await preprocessResume(resume);
-
     // Preprocess JD
     const structuredJD = await preProcessJD(jd);
 
@@ -631,12 +628,12 @@ Based on the structured Job Description and the candidate's Structured Resume, g
 Guidelines:
 1. Create a **tailored professional summary** (2-3 sentences) that emphasizes the candidate's most relevant experience, skills, and achievements for this specific role.
 2. Prioritize and reorder **skills** to match the job's must-have and nice-to-have skills list, placing the most relevant at the top.
-3. For each relevant **experience entry**, suggest 2-3 tailored bullet points that:
-   - Use skills from the job description in each bullet point
+3. For top 2 **experience entry**, suggest 4-5 tailored bullet points that:
+   - Use a smart combination of missing skills and already present skills between the structuredJD JSON and structuredResume JSON in each bullet point
    - Highlight achievements that align with the job requirements
    - Quantify results where possible
    - Show progression and impact
-   - Include the **company name** from the original resume for each experience entry
+   - Include the **company name** from the structuredResume JSON for each experience entry
 4. For **projects**, suggest tailored descriptions that emphasize technologies and outcomes relevant to the job.
 5. Provide **cover letter highlights** - 3-5 key talking points the candidate should emphasize in their cover letter.
 

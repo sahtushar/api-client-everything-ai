@@ -15,7 +15,7 @@ export async function analyzeHandler(
   req: Request<{}, AnalyzeResponse, AnalyzeRequest>,
   res: Response<AnalyzeResponse>
 ): Promise<void> {
-  const {jd, resume, jobMetadata} = req.body;
+  const {jd, structuredResume, jobMetadata} = req.body;
 
   if (!jd || typeof jd !== "string") {
     res.status(400).json({
@@ -25,30 +25,33 @@ export async function analyzeHandler(
     return;
   }
 
-  if (!resume || typeof resume !== "string") {
+  if (
+    !structuredResume ||
+    typeof structuredResume !== "object" ||
+    Array.isArray(structuredResume)
+  ) {
     res.status(400).json({
-      message: "Resume is required",
+      message: "Structured resume is required and must be an object",
       statusCode: 400,
     } as any);
     return;
   }
 
   const sanitizedJD = sanitizeText(jd);
-  const sanitizedResume = sanitizeText(resume);
 
   // Extract metadataHtmlString from jobMetadata if provided
   const metadataHtmlString = jobMetadata?.metadataHtmlString;
 
-  console.info("Analyzing job description and resume...", {
+  console.info("Analyzing job description and structured resume...", {
     jdLength: sanitizedJD.length,
-    resumeLength: sanitizedResume.length,
+    resumeName: structuredResume.name || "N/A",
     hasJobMetadata: !!metadataHtmlString,
   });
 
   try {
     const analysisResult = await analyze(
       sanitizedJD,
-      sanitizedResume,
+      structuredResume,
       metadataHtmlString
     );
 

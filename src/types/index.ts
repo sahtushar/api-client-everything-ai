@@ -18,39 +18,39 @@ export interface StructuredJD {
 }
 
 export interface StructuredResume {
-  name: string;
-  email: string;
-  phone: string;
-  location: string;
-  summary: string;
-  skills: string[]; // inferred + explicit skills
-  education: Array<{
-    institution: string;
-    degree: string;
-    field: string;
-    startDate: string;
-    endDate: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  summary?: string;
+  skills?: string[];
+  education?: Array<{
+    institution?: string;
+    degree?: string;
+    field?: string;
+    startDate?: string;
+    endDate?: string;
+  }>;
+  experience?: Array<{
+    company?: string;
+    title?: string;
+    location?: string;
+    startDate?: string;
+    endDate?: string;
+    bullets?: string[];
+    technologies?: string[];
   }>;
   inferredExperience?: Array<{
-    bullets: string[];
-    technologies: string[];
+    bullets?: string[];
+    technologies?: string[];
   }>;
-  experience: Array<{
-    company: string;
-    title: string;
-    location: string;
-    startDate: string;
-    endDate: string;
-    bullets: string[]; // concise key achievements
-    technologies: string[]; // technologies & tools from text
+  projects?: Array<{
+    name?: string;
+    description?: string;
+    technologies?: string[];
+    bullets?: string[];
   }>;
-  projects: Array<{
-    name: string;
-    description: string;
-    technologies: string[];
-    bullets: string[];
-  }>;
-  certifications: string[];
+  certifications?: string[];
 }
 
 export interface TailoredResume {
@@ -148,8 +148,8 @@ export interface PreprocessResumeResponse {
 
 export interface AnalyzeRequest {
   jd: string;
-  resume: string;
   jobMetadata?: JobMetadata;
+  structuredResume: StructuredResume;
 }
 
 export interface ApiError {

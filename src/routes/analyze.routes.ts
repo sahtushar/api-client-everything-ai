@@ -17,8 +17,7 @@ router.post(
   "/analyze",
   validateRequest([
     {field: "jd", required: true, minLength: 10, maxLength: 50000},
-    {field: "resume", required: true, minLength: 10, maxLength: 50000},
-    {field: "jobMetadata", required: false, minLength: 10, maxLength: 50000},
+    // structuredResume is validated in the controller (object type, not string)
   ]),
   asyncHandler(analyzeHandler)
 );
